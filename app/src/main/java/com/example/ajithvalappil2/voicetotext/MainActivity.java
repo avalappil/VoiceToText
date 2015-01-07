@@ -1,15 +1,11 @@
 package com.example.ajithvalappil2.voicetotext;
 
-import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.app.Activity;
 import android.view.View;
 import android.widget.*;
-import android.bluetooth.*;
-import android.os.Bundle;
 import android.content.*;
 import android.app.AlertDialog;
 import android.speech.RecognitionListener;
@@ -18,18 +14,15 @@ import android.speech.SpeechRecognizer;
 import java.io.InputStream;
 import java.util.*;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.UUID;
-import android.speech.*;
-import android.app.Activity;
-import android.content.ActivityNotFoundException;
+import android.speech.tts.TextToSpeech;
 
 
-public class MainActivity extends ActionBarActivity{
+public class MainActivity extends ActionBarActivity implements TextToSpeech.OnInitListener{
 
+    TextToSpeech textToSpeech;
     Button connectBlu;
     TextView voiceToText;
     ListView mBluAdapter;
@@ -45,7 +38,7 @@ public class MainActivity extends ActionBarActivity{
     int selectedBlueToothDevices = 0;
 
     boolean showSpeech = true;
-
+    String inMsg = "";
     boolean executeLoop = true;
 
     String message = "";
@@ -76,8 +69,34 @@ public class MainActivity extends ActionBarActivity{
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,this.getPackageName());
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        textToSpeech = new TextToSpeech(this, this);
 
     }
+
+    @Override
+    public void onInit(int status) {
+        if (status == TextToSpeech.SUCCESS) {
+            int result = textToSpeech.setLanguage(Locale.US);
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                //Log.e("error", "Language is not supported");
+            } else {
+                //convertToSpeech("Hello, Enter some text and then press speak now button. ");
+            }
+        } else {
+            //Log.e("error", "Failed  to Initilize!");
+        }
+    }
+
+    /**
+     * Releases the resources used by the TextToSpeech engine.
+     */
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        textToSpeech.shutdown();
+    }
+
+
 
 
     @Override
@@ -268,13 +287,19 @@ public class MainActivity extends ActionBarActivity{
             System.out.println("In onResume() and an exception occurred during write: " + e.getMessage());
         }
         try{
+            inMsg = "";
             ReadData aReadData = new ReadData();
             aReadData.setExecuteLoop(true);
             aReadData.setInStream(inStream);
+            aReadData.setTextToSpeech(textToSpeech);
             aReadData.start();
             aReadData.join();
-            String inMsg = aReadData.getInpMsg();
+            inMsg = aReadData.getInpMsg();
             voiceToText.append("Controller: " + inMsg + "\n");
+            //Toast.makeText(getApplicationContext(), inMsg,Toast.LENGTH_SHORT).show();
+            //ttobj.speak(inMsg, TextToSpeech.QUEUE_FLUSH, null);
+            //convertToSpeech(inMsg);
+            inMsg = "";
         }catch(Exception e){
             e.printStackTrace();
         }

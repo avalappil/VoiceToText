@@ -1,29 +1,30 @@
 package com.example.ajithvalappil2.voicetotext;
 
+import android.speech.tts.TextToSpeech;
+
 import java.io.InputStream;
 
 /**
  * Created by ajithvalappil2 on 1/6/15.
  */
-public class ReadData extends Thread  {
+public class ReadData extends Thread{
 
     boolean executeLoop = false;
     public InputStream inStream = null;
     String inpMsg = "";
+    TextToSpeech textToSpeech;
 
     public void run(){
-        System.out.println("********************************************************************");
+        inpMsg = "";
         try {
             int i;
             char c;
-            System.out.println("Ajith1>>" + inStream);
             while (inStream!=null && (i=inStream.read())!=-1){ //Check if there is an available byte to read
                 c = (char)i; //Conduct a serial read
                 if (c=='#'){
                     break;
                 }
                 inpMsg = inpMsg.concat(String.valueOf(c));
-                System.out.println("Ajith2>>" + c + ">>" + inpMsg);
                 try {
                     Thread.sleep(10);
                 }catch(Exception e){
@@ -36,6 +37,13 @@ public class ReadData extends Thread  {
         }
         if (inpMsg!=null){
             System.out.println("Ajith>>" + inpMsg);
+            /**
+             * Speaks the string using the specified queuing strategy and speech parameters.
+             */
+            if (null == inpMsg || "".equals(inpMsg)) {
+                inpMsg = "Please give me some input in below text field.";
+            }
+            //textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_FLUSH, null);
         }
     }
 
@@ -61,5 +69,13 @@ public class ReadData extends Thread  {
 
     public void setInpMsg(String inpMsg) {
         this.inpMsg = inpMsg;
+    }
+
+    public TextToSpeech getTextToSpeech() {
+        return textToSpeech;
+    }
+
+    public void setTextToSpeech(TextToSpeech textToSpeech) {
+        this.textToSpeech = textToSpeech;
     }
 }
