@@ -231,6 +231,7 @@ public class MainActivity extends ActionBarActivity{
                         isDevicesConnected = false;
                     }
                     connectBlu.setText("Connect");
+                    voiceToText.setText("");
                     aMainLayout.setVisibility(view.VISIBLE);
                     aBluListLayout.setVisibility(view.INVISIBLE);
                     if (mSpeechRecognizer != null){
@@ -266,64 +267,18 @@ public class MainActivity extends ActionBarActivity{
         } catch (IOException e) {
             System.out.println("In onResume() and an exception occurred during write: " + e.getMessage());
         }
-    }
-
-    /**
-     * Showing google speech input dialog
-     * */
-    private void promptSpeechInput() {
-        try {
-            Thread.sleep(2000);
+        try{
+            ReadData aReadData = new ReadData();
+            aReadData.setExecuteLoop(true);
+            aReadData.setInStream(inStream);
+            aReadData.start();
+            aReadData.join();
+            String inMsg = aReadData.getInpMsg();
+            voiceToText.append("Controller: " + inMsg + "\n");
         }catch(Exception e){
-
-        }
-        if (showSpeech){
-            Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-            intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-            intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Say exit to quit\n" + message);
-            try {
-                startActivityForResult(intent, REQ_CODE_SPEECH_INPUT);
-            } catch (ActivityNotFoundException a) {
-                if (showSpeech) promptSpeechInput();
-                Toast.makeText(getApplicationContext(),"Not supported",Toast.LENGTH_SHORT).show();
-            }
+            e.printStackTrace();
         }
     }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (!showSpeech){
-            return;
-        }
-        switch (requestCode) {
-            case REQ_CODE_SPEECH_INPUT: {
-                if (resultCode == RESULT_OK && null != data) {
-
-                    ArrayList<String> result = data
-                            .getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    message = "";
-                    try{
-                        message = result.get(0);
-                        if (message!=null && message.equalsIgnoreCase("exit")) {
-                            showSpeech = false;
-                            break;
-                        }
-                        message = "*" + message + "#";
-                    }catch(Exception e){
-                        message = "Not able to recognize input. Please try again";
-                    }
-
-                    sendMessage(message);
-                    voiceToText.append(message + "\n");
-                }
-                if (showSpeech) promptSpeechInput();
-                break;
-            }
-        }
-       // if (showSpeech) promptSpeechInput();
-    }
-
 
     public void clickingData(View view){
         showSpeech = false;
