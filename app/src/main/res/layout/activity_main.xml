@@ -3,7 +3,8 @@
     android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
+    android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+    android:background="#ffcfd1d1">
 
     <LinearLayout
         android:orientation="vertical"
@@ -12,7 +13,8 @@
         android:id="@+id/mainlayout"
         android:visibility="visible"
         android:onClick="clickingData"
-        android:weightSum="1">
+        android:weightSum="1"
+        android:background="#66d0cecc">
 
         <Button
             android:layout_width="wrap_content"
@@ -32,7 +34,8 @@
             android:layout_weight="0.23"
             android:nestedScrollingEnabled="true"
             android:paddingTop="5dp"
-            android:editable="false" />
+            android:editable="false"
+            android:background="#ffefe9e7" />
 
     </LinearLayout>
 
@@ -41,7 +44,8 @@
         android:layout_width="fill_parent"
         android:id="@+id/bluToothList"
         android:visibility="invisible"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:background="#f3d9d9d9">
 
         <ListView
             android:layout_width="fill_parent"

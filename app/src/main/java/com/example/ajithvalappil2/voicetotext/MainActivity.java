@@ -233,6 +233,18 @@ public class MainActivity extends ActionBarActivity{
                     connectBlu.setText("Connect");
                     aMainLayout.setVisibility(view.VISIBLE);
                     aBluListLayout.setVisibility(view.INVISIBLE);
+                    if (mSpeechRecognizer != null){
+                        mSpeechRecognizer.stopListening();
+                        mSpeechRecognizer.destroy();
+                    }
+                    try {
+                        if (btSocket!=null)
+                            btSocket.close();
+                        isDevicesConnected = false;
+                    } catch (IOException e2) {
+                        System.out.println("Fatal Error In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
+                        isDevicesConnected = false;
+                    }
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -333,6 +345,7 @@ public class MainActivity extends ActionBarActivity{
             public void onClick(DialogInterface dialog, int which) {
                 //if user pressed "yes", then he is allowed to exit from application
                 if (mSpeechRecognizer != null){
+                    mSpeechRecognizer.stopListening();
                     mSpeechRecognizer.destroy();
                 }
                 try {
@@ -417,7 +430,7 @@ public class MainActivity extends ActionBarActivity{
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             if (matches.size()>=0) {
                 message = matches.get(0);
-                voiceToText.append(message + "\n");
+                voiceToText.setText("Android: " + message + "\n");
                 sendMessage("*" + message + "#");
             }
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
