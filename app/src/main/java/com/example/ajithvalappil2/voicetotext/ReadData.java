@@ -1,6 +1,7 @@
 package com.example.ajithvalappil2.voicetotext;
 
 import android.speech.tts.TextToSpeech;
+import android.widget.TextView;
 
 import java.io.InputStream;
 
@@ -9,9 +10,9 @@ import java.io.InputStream;
  */
 public class ReadData extends Thread{
 
-    boolean executeLoop = false;
     public InputStream inStream = null;
     String inpMsg = "";
+    TextView voiceToText = null;
     TextToSpeech textToSpeech;
 
     public void run(){
@@ -35,24 +36,11 @@ public class ReadData extends Thread{
         }catch(Exception e){
             e.printStackTrace();
         }
-        if (inpMsg!=null){
+        if (inpMsg!=null && !"".equals(inpMsg)){
             System.out.println("Ajith>>" + inpMsg);
-            /**
-             * Speaks the string using the specified queuing strategy and speech parameters.
-             */
-            if (null == inpMsg || "".equals(inpMsg)) {
-                inpMsg = "Please give me some input in below text field.";
-            }
-            //textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_FLUSH, null);
+            System.out.println(">>> " + inpMsg);
+            textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_FLUSH, null);
         }
-    }
-
-    public boolean isExecuteLoop() {
-        return executeLoop;
-    }
-
-    public void setExecuteLoop(boolean executeLoop) {
-        this.executeLoop = executeLoop;
     }
 
     public InputStream getInStream() {
@@ -67,15 +55,19 @@ public class ReadData extends Thread{
         return inpMsg;
     }
 
-    public void setInpMsg(String inpMsg) {
-        this.inpMsg = inpMsg;
-    }
-
     public TextToSpeech getTextToSpeech() {
         return textToSpeech;
     }
 
     public void setTextToSpeech(TextToSpeech textToSpeech) {
         this.textToSpeech = textToSpeech;
+    }
+
+    public TextView getVoiceToText() {
+        return voiceToText;
+    }
+
+    public void setVoiceToText(TextView voiceToText) {
+        this.voiceToText = voiceToText;
     }
 }

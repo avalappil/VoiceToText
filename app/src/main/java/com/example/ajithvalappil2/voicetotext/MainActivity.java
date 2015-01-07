@@ -279,6 +279,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
 
 
     public void sendMessage(String message){
+        mSpeechRecognizer.stopListening();
         byte[] msgBuffer = message.getBytes();
         try {
             if (outStream!=null)
@@ -289,17 +290,23 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         try{
             inMsg = "";
             ReadData aReadData = new ReadData();
-            aReadData.setExecuteLoop(true);
             aReadData.setInStream(inStream);
             aReadData.setTextToSpeech(textToSpeech);
             aReadData.start();
             aReadData.join();
             inMsg = aReadData.getInpMsg();
             voiceToText.append("Controller: " + inMsg + "\n");
-            //Toast.makeText(getApplicationContext(), inMsg,Toast.LENGTH_SHORT).show();
-            //ttobj.speak(inMsg, TextToSpeech.QUEUE_FLUSH, null);
-            //convertToSpeech(inMsg);
-            inMsg = "";
+            try {
+                Thread.sleep(1000);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+            try {
+                mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+
         }catch(Exception e){
             e.printStackTrace();
         }
