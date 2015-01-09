@@ -12,19 +12,13 @@ public class ReadData extends Thread{
 
     public InputStream inStream = null;
     String inpMsg = null;
-    TextView voiceToText = null;
     TextToSpeech textToSpeech;
 
     public void run(){
         textToSpeech.speak("Welcome", TextToSpeech.QUEUE_FLUSH, null);
         while (true){
-            try {
-                Thread.sleep(100);
-            }catch(Exception e){
-
-            }
             try{
-                inpMsg = null;
+                inpMsg = "";
 
             }catch(Exception e1){
                 e1.printStackTrace();
@@ -32,27 +26,28 @@ public class ReadData extends Thread{
             try {
                 int i;
                 char c;
-                while (inStream!=null && (i=inStream.read())!=-1){ //Check if there is an available byte to read
+                inpMsg = "";
+                while (inStream!=null && inStream.available() >= 0 && (i=inStream.read())!=-1){ //Check if there is an available byte to read
                     c = (char)i; //Conduct a serial read
                     if (c=='#'){
                         break;
                     }
                     inpMsg = inpMsg.concat(String.valueOf(c));
                 }
-
-                if (inStream!=null && inpMsg!=null && !"".equals(inpMsg)){
+                System.out.println("Ajith>>" + inpMsg);
+                if (inpMsg!=null && !"".equals(inpMsg)){
                     System.out.println("Ajith>>" + inpMsg);
                     System.out.println(">>> " + inpMsg);
                     textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_ADD, null);
-                    try{
-                        Thread.sleep(2000);
-                    }catch(Exception dd){
-                        dd.printStackTrace();
+                    while(textToSpeech.isSpeaking()){
+
                     }
+                    inpMsg = "";
                 }
 
             }catch(Exception e){
                 e.printStackTrace();
+                break;
             }
         }
     }
@@ -75,13 +70,5 @@ public class ReadData extends Thread{
 
     public void setTextToSpeech(TextToSpeech textToSpeech) {
         this.textToSpeech = textToSpeech;
-    }
-
-    public TextView getVoiceToText() {
-        return voiceToText;
-    }
-
-    public void setVoiceToText(TextView voiceToText) {
-        this.voiceToText = voiceToText;
     }
 }
