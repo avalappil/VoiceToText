@@ -22,9 +22,8 @@ import android.os.Handler;
 import android.os.Message;
 
 
-public class MainActivity extends ActionBarActivity implements TextToSpeech.OnInitListener{
+public class MainActivity extends ActionBarActivity{
 
-    TextToSpeech textToSpeech;
     Button connectBlu;
     TextView voiceToText;
     ListView mBluAdapter;
@@ -100,31 +99,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,this.getPackageName());
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
 
-        textToSpeech = new TextToSpeech(this, this);
 
-    }
-
-    @Override
-    public void onInit(int status) {
-        if (status == TextToSpeech.SUCCESS) {
-            int result = textToSpeech.setLanguage(Locale.US);
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                //Log.e("error", "Language is not supported");
-            } else {
-                //convertToSpeech("Hello, Enter some text and then press speak now button. ");
-            }
-        } else {
-            //Log.e("error", "Failed  to Initilize!");
-        }
-    }
-
-    /**
-     * Releases the resources used by the TextToSpeech engine.
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        textToSpeech.shutdown();
     }
 
     @Override
