@@ -55,7 +55,8 @@
             android:id="@+id/listView"
             android:paddingTop="5dp"
             android:smoothScrollbar="true"
-            android:scrollbars="vertical" />
+            android:scrollbars="vertical"
+            android:background="#fffcd07c" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -65,7 +66,10 @@
             android:id="@+id/button3"
             android:onClick="blueSelected"
             android:layout_gravity="right"
-            android:layout_marginRight="5dp" />
+            android:layout_marginRight="5dp"
+            android:background="#ff07a4fc"
+            android:textColor="#ffffffff"
+            android:layout_marginTop="5dp" />
 
         <Button
             style="?android:attr/buttonStyleSmall"
@@ -75,7 +79,10 @@
             android:id="@+id/button2"
             android:onClick="cancel"
             android:layout_gravity="right|bottom"
-            android:layout_marginRight="5dp" />
+            android:layout_marginRight="5dp"
+            android:background="#ffff140b"
+            android:textColor="#fff9fff7"
+            android:layout_marginTop="5dp" />
     </LinearLayout>
 
 </RelativeLayout>
