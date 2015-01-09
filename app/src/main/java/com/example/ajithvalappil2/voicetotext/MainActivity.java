@@ -60,21 +60,31 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         @Override
         public void handleMessage(Message msg) {
             Bundle bundle = msg.getData();
-            String msgData  = bundle.getString("connected");
-            System.out.println("Complete.....>> " + msg);
-            Button connectBlu=(Button)findViewById(R.id.button);
-            if (msgData!=null && msgData.equalsIgnoreCase("Connected")){
-                connectBlu.setText("Disconnect");
-                btSocket = aBluetoothController.getBtSocket();
-                outStream = aBluetoothController.getOutStream();
-                inStream = aBluetoothController.getInStream();
-                //aReadData.setTextToSpeech(textToSpeech);
-                //aReadData.setInStream(inStream);
-                //aReadData.start();
-            }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
-                connectBlu.setText("Connect");
+
+            if (bundle.containsKey("connected")){
+                String msgData  = bundle.getString("connected");
+                System.out.println("Complete.....>> " + msgData);
+                Button connectBlu=(Button)findViewById(R.id.button);
+                if (msgData!=null && msgData.equalsIgnoreCase("Connected")){
+                    connectBlu.setText("Disconnect");
+                    btSocket = aBluetoothController.getBtSocket();
+                    outStream = aBluetoothController.getOutStream();
+                    inStream = aBluetoothController.getInStream();
+                    aReadData.setHandler(handler);
+                    aReadData.setBtSocket(btSocket);
+                    aReadData.setInStream(inStream);
+                    aReadData.start();
+                }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
+                    connectBlu.setText("Connect");
+                }
+                System.out.println("Complete.....");
             }
-            System.out.println("Complete.....");
+            if (bundle.containsKey("message")){
+                String msgData  = bundle.getString("message");
+                System.out.println("Complete.....>> " + msgData);
+                TextView voiceToText = (TextView)findViewById(R.id.textView);
+                voiceToText.append("Controller:" + msgData);
+            }
         }
     };
     @Override

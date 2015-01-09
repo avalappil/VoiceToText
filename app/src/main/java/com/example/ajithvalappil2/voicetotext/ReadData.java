@@ -1,5 +1,9 @@
 package com.example.ajithvalappil2.voicetotext;
 
+import android.bluetooth.BluetoothSocket;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.speech.tts.TextToSpeech;
 import android.widget.TextView;
 
@@ -12,10 +16,10 @@ public class ReadData extends Thread{
 
     public InputStream inStream = null;
     String inpMsg = null;
-    TextToSpeech textToSpeech;
+    BluetoothSocket btSocket;
+    Handler handler = new Handler();
 
     public void run(){
-        textToSpeech.speak("Welcome", TextToSpeech.QUEUE_FLUSH, null);
         while (true){
             try{
                 inpMsg = "";
@@ -27,21 +31,20 @@ public class ReadData extends Thread{
                 int i;
                 char c;
                 inpMsg = "";
-                while (inStream!=null && inStream.available() >= 0 && (i=inStream.read())!=-1){ //Check if there is an available byte to read
+                while (btSocket.isConnected() && inStream!=null && (i=inStream.read())!=-1){ //Check if there is an available byte to read
                     c = (char)i; //Conduct a serial read
                     if (c=='#'){
                         break;
                     }
                     inpMsg = inpMsg.concat(String.valueOf(c));
                 }
-                System.out.println("Ajith>>" + inpMsg);
-                if (inpMsg!=null && !"".equals(inpMsg)){
-                    System.out.println("Ajith>>" + inpMsg);
+                if (btSocket.isConnected() && inpMsg!=null && !"".equals(inpMsg)){
+                    Message msg = handler.obtainMessage();
+                    Bundle bundle = new Bundle();
+                    bundle.putString("message", inpMsg);
+                    msg.setData(bundle);
+                    handler.sendMessage(msg);
                     System.out.println(">>> " + inpMsg);
-                    textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_ADD, null);
-                    while(textToSpeech.isSpeaking()){
-
-                    }
                     inpMsg = "";
                 }
 
@@ -64,11 +67,23 @@ public class ReadData extends Thread{
         return inpMsg;
     }
 
-    public TextToSpeech getTextToSpeech() {
-        return textToSpeech;
+    public void setInpMsg(String inpMsg) {
+        this.inpMsg = inpMsg;
     }
 
-    public void setTextToSpeech(TextToSpeech textToSpeech) {
-        this.textToSpeech = textToSpeech;
+    public void setBtSocket(BluetoothSocket btSocket) {
+        this.btSocket = btSocket;
+    }
+
+    public BluetoothSocket getBtSocket() {
+        return btSocket;
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }
