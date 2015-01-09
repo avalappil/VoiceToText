@@ -371,7 +371,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
             ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             if (matches.size()>=0) {
                 message = matches.get(0);
-                voiceToText.setText("Android: " + message + "\n");
+                voiceToText.setText("You: " + message + "\n");
                 sendMessage("*" + message + "#");
             }
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
