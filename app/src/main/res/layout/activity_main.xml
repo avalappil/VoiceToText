@@ -12,7 +12,6 @@
         android:layout_height="fill_parent"
         android:id="@+id/mainlayout"
         android:visibility="visible"
-        android:onClick="clickingData"
         android:weightSum="1"
         android:background="#66d0cecc">
 

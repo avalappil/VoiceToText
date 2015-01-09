@@ -2,14 +2,16 @@ package com.example.ajithvalappil2.voicetotext;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
+import android.widget.Toast;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 import java.io.*;
+import android.os.Message;
+import android.os.Bundle;
 
 /**
  * Created by ajithvalappil2 on 1/5/15.
@@ -20,8 +22,9 @@ public class BluetoothController extends Thread {
     public BluetoothSocket btSocket = null;
     public OutputStream outStream = null;
     public InputStream inStream = null;
-    boolean isDevicesConnected = false;
-    List<String> items = new ArrayList<String>();
+
+    Handler handler = new Handler();
+
     // Well known SPP UUID
     public static final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     // Insert your server's MAC address
@@ -93,7 +96,7 @@ public class BluetoothController extends Thread {
                         // Loop through paired devices
                         for (BluetoothDevice device : pairedDevices) {
                             // Add the name and address to an array adapter to show in a ListView
-                            items.add(device.getName() + "\n" + device.getAddress());
+                            MainActivity.items.add(device.getName() + "\n" + device.getAddress());
                         }
                     }
                 }
@@ -106,7 +109,10 @@ public class BluetoothController extends Thread {
 
     public void setUp(){
         hasProcessComplete = false;
+        MainActivity.processingComplete = false;
         try{
+            Message msg = handler.obtainMessage();
+            Bundle bundle = new Bundle();
             // Set up a pointer to the remote node using it's address.
             BluetoothDevice device = btAdapter.getRemoteDevice(address);
             // Two things are needed to make a connection:
@@ -127,13 +133,13 @@ public class BluetoothController extends Thread {
             try {
                 btSocket.connect();
                 System.out.println("...Connection established and data link opened...");
-                isDevicesConnected = true;
+                MainActivity.isDevicesConnected = true;
             } catch (IOException e) {
                 try {
                     btSocket.close();
                 } catch (IOException e2) {
                     System.out.println("Fatal Error In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
-                    isDevicesConnected = false;
+                    MainActivity.isDevicesConnected = false;
                 }
             }
 
@@ -145,9 +151,17 @@ public class BluetoothController extends Thread {
                 inStream = btSocket.getInputStream();
             } catch (IOException e) {
                 System.out.println("Fatal Error In onResume() and output stream creation failed:" + e.getMessage() + ".");
-                isDevicesConnected = false;
+                MainActivity.isDevicesConnected = false;
             }
 
+            if (MainActivity.isDevicesConnected){
+                bundle.putString("connected", "Connected");
+            }else{
+                bundle.putString("connected", "Disconnected");
+            }
+            MainActivity.processingComplete = true;
+            msg.setData(bundle);
+            handler.sendMessage(msg);
 
         }catch(Exception e){
             e.printStackTrace();
@@ -185,14 +199,6 @@ public class BluetoothController extends Thread {
 
     public void setInStream(InputStream inStream) {
         this.inStream = inStream;
-    }
-
-    public boolean isDevicesConnected() {
-        return isDevicesConnected;
-    }
-
-    public void setDevicesConnected(boolean isDevicesConnected) {
-        this.isDevicesConnected = isDevicesConnected;
     }
 
     public static UUID getMyUuid() {
@@ -239,11 +245,11 @@ public class BluetoothController extends Thread {
         this.deviceBluetoothIsOn = deviceBluetoothIsOn;
     }
 
-    public List<String> getItems() {
-        return items;
+    public Handler getHandler() {
+        return handler;
     }
 
-    public void setItems(List<String> items) {
-        this.items = items;
+    public void setHandler(Handler handler) {
+        this.handler = handler;
     }
 }

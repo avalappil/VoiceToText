@@ -11,35 +11,49 @@ import java.io.InputStream;
 public class ReadData extends Thread{
 
     public InputStream inStream = null;
-    String inpMsg = "";
+    String inpMsg = null;
     TextView voiceToText = null;
     TextToSpeech textToSpeech;
 
     public void run(){
-        inpMsg = "";
-        try {
-            int i;
-            char c;
-            while (inStream!=null && (i=inStream.read())!=-1){ //Check if there is an available byte to read
-                c = (char)i; //Conduct a serial read
-                if (c=='#'){
-                    break;
-                }
-                inpMsg = inpMsg.concat(String.valueOf(c));
-                try {
-                    Thread.sleep(10);
-                }catch(Exception e){
+        textToSpeech.speak("Welcome", TextToSpeech.QUEUE_FLUSH, null);
+        while (true){
+            try {
+                Thread.sleep(100);
+            }catch(Exception e){
 
-                }
             }
+            try{
+                inpMsg = null;
 
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        if (inpMsg!=null && !"".equals(inpMsg)){
-            System.out.println("Ajith>>" + inpMsg);
-            System.out.println(">>> " + inpMsg);
-            textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_FLUSH, null);
+            }catch(Exception e1){
+                e1.printStackTrace();
+            }
+            try {
+                int i;
+                char c;
+                while (inStream!=null && (i=inStream.read())!=-1){ //Check if there is an available byte to read
+                    c = (char)i; //Conduct a serial read
+                    if (c=='#'){
+                        break;
+                    }
+                    inpMsg = inpMsg.concat(String.valueOf(c));
+                }
+
+                if (inStream!=null && inpMsg!=null && !"".equals(inpMsg)){
+                    System.out.println("Ajith>>" + inpMsg);
+                    System.out.println(">>> " + inpMsg);
+                    textToSpeech.speak(inpMsg, TextToSpeech.QUEUE_ADD, null);
+                    try{
+                        Thread.sleep(2000);
+                    }catch(Exception dd){
+                        dd.printStackTrace();
+                    }
+                }
+
+            }catch(Exception e){
+                e.printStackTrace();
+            }
         }
     }
 

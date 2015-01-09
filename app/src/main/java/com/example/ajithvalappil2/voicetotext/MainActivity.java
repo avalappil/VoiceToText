@@ -18,6 +18,8 @@ import android.bluetooth.BluetoothSocket;
 import java.io.IOException;
 import java.io.OutputStream;
 import android.speech.tts.TextToSpeech;
+import android.os.Handler;
+import android.os.Message;
 
 
 public class MainActivity extends ActionBarActivity implements TextToSpeech.OnInitListener{
@@ -29,34 +31,48 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
     LinearLayout aMainLayout;
     LinearLayout aBluListLayout;
     ArrayAdapter<String> mArrayAdapter;
-    List<String> items = new ArrayList<String>();
+    static List<String> items = new ArrayList<String>();
     private SpeechRecognizer speech = null;
     public OutputStream outStream = null;
     public InputStream inStream = null;
-
+    static boolean processingComplete = false;
     static final int REQUEST_ENABLE_BT = 0;
+    boolean showConnectedMsg = false;
     int selectedBlueToothDevices = 0;
-
-    boolean showSpeech = true;
     String inMsg = "";
     boolean executeLoop = true;
-
     String message = "";
     boolean blConnTaskCom = false;
-
     //speech data
     private final int REQ_CODE_SPEECH_INPUT = 100;
-
     BluetoothController aBluetoothController = new BluetoothController();
     public BluetoothAdapter btAdapter = null;
     public BluetoothSocket btSocket = null;
     public static String address = "88:C9:D0:94:DE:3F";
-    boolean isDevicesConnected = false;
-
+    static boolean isDevicesConnected = false;
     private SpeechRecognizer mSpeechRecognizer;
     private Intent mSpeechRecognizerIntent;
     private boolean mIsListening;
 
+
+    Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            Bundle bundle = msg.getData();
+            String msgData  = bundle.getString("connected");
+            System.out.println("Complete.....>> " + msg);
+            Button connectBlu=(Button)findViewById(R.id.button);
+            if (msgData!=null && msgData.equalsIgnoreCase("Connected")){
+                connectBlu.setText("Disconnect");
+                btSocket = aBluetoothController.getBtSocket();
+                outStream = aBluetoothController.getOutStream();
+                inStream = aBluetoothController.getInStream();
+            }else if (msgData!=null && msgData.equalsIgnoreCase("Disconnected")){
+                connectBlu.setText("Connect");
+            }
+            System.out.println("Complete.....");
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +85,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,this.getPackageName());
         mSpeechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+
         textToSpeech = new TextToSpeech(this, this);
 
     }
@@ -95,9 +112,6 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         super.onDestroy();
         textToSpeech.shutdown();
     }
-
-
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -131,6 +145,14 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
                 }else{
                     btAdapter = aBluetoothController.getBtAdapter();
                 }
+                aBluetoothController = new BluetoothController();
+                aBluetoothController.setBtAdapter(btAdapter);
+                aBluetoothController.setProcessType("getlist");
+                System.out.println("init.....");
+                System.out.println("Thread started.....");
+                aBluetoothController.start();
+                mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
+                System.out.println("wait for complete started.....");
             }else{
                 finish();
             }
@@ -175,23 +197,10 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
                     aMainLayout.setVisibility(view.VISIBLE);
                     aBluListLayout.setVisibility(view.INVISIBLE);
                 }else{
-                    aBluetoothController = new BluetoothController();
-                    aBluetoothController.setBtAdapter(btAdapter);
-                    aBluetoothController.setProcessType("getlist");
-                    System.out.println("init.....");
-                    System.out.println("Thread started.....");
-                    aBluetoothController.start();
-                    System.out.println("wait for complete started.....");
-                    aBluetoothController.join();
-                    System.out.println("Complete.....");
-                    List<String> aItems = aBluetoothController.getItems();
-                    System.out.println("<<" + aItems.size() + ">>");
-                    if (aItems!=null && !aItems.isEmpty()){
-                        items.addAll(aItems);
-                        mBluAdapter.setAdapter(mArrayAdapter);
-                        aMainLayout.setVisibility(view.INVISIBLE);
-                        aBluListLayout.setVisibility(view.VISIBLE);
-                    }
+                    System.out.println("Showing List.....");
+                    mBluAdapter.setAdapter(mArrayAdapter);
+                    aMainLayout.setVisibility(view.INVISIBLE);
+                    aBluListLayout.setVisibility(view.VISIBLE);
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -218,28 +227,19 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
                     aBluetoothController = new BluetoothController();
                     aBluetoothController.setBtAdapter(btAdapter);
                     aBluetoothController.setProcessType("setup");
+                    aBluetoothController.setHandler(handler);
                     aBluetoothController.address =  MainActivity.address;
                     System.out.println("init.....");
                     System.out.println("Thread started.....");
                     aBluetoothController.start();
-                    System.out.println("wait for complete started.....");
-                    aBluetoothController.join();
-                    System.out.println("Complete.....");
-                    isDevicesConnected = aBluetoothController.isDevicesConnected();
-                    if (isDevicesConnected){
-                        btSocket = aBluetoothController.getBtSocket();
-                        outStream = aBluetoothController.getOutStream();
-                        inStream = aBluetoothController.getInStream();
 
-                        showSpeech = true;
-                        voiceToText.setText("");
-                        aMainLayout.setVisibility(view.VISIBLE);
-                        aBluListLayout.setVisibility(view.INVISIBLE);
-                        connectBlu.setText("Disconnect");
-                        mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
-                        //readData();
-                        //if (showSpeech) promptSpeechInput();
-                    }
+                    aMainLayout.setVisibility(view.VISIBLE);
+                    aBluListLayout.setVisibility(view.INVISIBLE);
+                    aMainLayout.setVisibility(view.VISIBLE);
+                    aBluListLayout.setVisibility(view.INVISIBLE);
+                    voiceToText.setText("");
+
+                    Toast.makeText(this, "Connecting...", Toast.LENGTH_SHORT).show();
                 }else{
                     try {
                         if (btSocket!=null)
@@ -253,18 +253,6 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
                     voiceToText.setText("");
                     aMainLayout.setVisibility(view.VISIBLE);
                     aBluListLayout.setVisibility(view.INVISIBLE);
-                    if (mSpeechRecognizer != null){
-                        mSpeechRecognizer.stopListening();
-                        mSpeechRecognizer.destroy();
-                    }
-                    try {
-                        if (btSocket!=null)
-                            btSocket.close();
-                        isDevicesConnected = false;
-                    } catch (IOException e2) {
-                        System.out.println("Fatal Error In onResume() and unable to close socket during connection failure" + e2.getMessage() + ".");
-                        isDevicesConnected = false;
-                    }
                 }
             }catch(Exception e){
                 e.printStackTrace();
@@ -279,47 +267,23 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
 
 
     public void sendMessage(String message){
-        mSpeechRecognizer.stopListening();
+        //mSpeechRecognizer.stopListening();
         byte[] msgBuffer = message.getBytes();
         try {
-            if (outStream!=null)
+            if (outStream!=null) {
                 outStream.write(msgBuffer);
+            }else{
+                Toast.makeText(this, "Please connect to a device...", Toast.LENGTH_SHORT).show();
+            }
         } catch (IOException e) {
             System.out.println("In onResume() and an exception occurred during write: " + e.getMessage());
         }
-        try{
-            inMsg = "";
-            ReadData aReadData = new ReadData();
-            aReadData.setInStream(inStream);
-            aReadData.setTextToSpeech(textToSpeech);
-            aReadData.start();
-            aReadData.join();
-            inMsg = aReadData.getInpMsg();
-            voiceToText.append("Controller: " + inMsg + "\n");
-            try {
-                Thread.sleep(1000);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-            try {
-                mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
-            }catch(Exception e){
-                e.printStackTrace();
-            }
-
+        try {
+            //Thread.sleep(500);
+           // mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
         }catch(Exception e){
             e.printStackTrace();
         }
-    }
-
-    public void clickingData(View view){
-        showSpeech = false;
-    }
-
-    public void readData()
-    {
-
-
     }
 
     @Override
@@ -357,19 +321,13 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         alert.show();
     }
 
-    public void showMic(View view){
-        mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
-    }
-
-    public void connectWithDevices(final View view) {}
-
     protected class SpeechRecognitionListener implements RecognitionListener
     {
 
         @Override
         public void onBeginningOfSpeech()
         {
-            //Log.d(TAG, "onBeginingOfSpeech");
+            System.out.println("onBeginingOfSpeech");
         }
 
         @Override
@@ -381,7 +339,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         @Override
         public void onEndOfSpeech()
         {
-            //Log.d(TAG, "onEndOfSpeech");
+            System.out.println("onEndOfSpeech");
         }
 
         @Override
@@ -389,7 +347,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         {
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
 
-            //Log.d(TAG, "error = " + error);
+            System.out.println("error = " + error);
         }
 
         @Override
@@ -407,7 +365,7 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
         @Override
         public void onReadyForSpeech(Bundle params)
         {
-            //Log.d(TAG, "onReadyForSpeech"); //$NON-NLS-1$
+            System.out.println("onReadyForSpeech"); //$NON-NLS-1$
         }
 
         @Override
@@ -418,11 +376,10 @@ public class MainActivity extends ActionBarActivity implements TextToSpeech.OnIn
             if (matches.size()>=0) {
                 message = matches.get(0);
                 voiceToText.setText("Android: " + message + "\n");
+                System.out.println(message);
                 sendMessage("*" + message + "#");
             }
             mSpeechRecognizer.startListening(mSpeechRecognizerIntent);
-            // matches are the return values of speech recognition engine
-            // Use these values for whatever you wish to do
         }
 
         @Override
