@@ -117,6 +117,7 @@ public class MainActivity extends ActionBarActivity{
 
         System.out.println("testing");
 
+
         try {
             System.out.println("Starting.....");
             aBluetoothController.setProcessType("init");
