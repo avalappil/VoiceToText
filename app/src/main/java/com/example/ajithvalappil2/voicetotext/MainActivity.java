@@ -114,7 +114,6 @@ public class MainActivity extends ActionBarActivity{
         mBluAdapter.setChoiceMode(mBluAdapter.CHOICE_MODE_SINGLE);
         aMainLayout = (LinearLayout)findViewById(R.id.mainlayout);
         aBluListLayout = (LinearLayout)findViewById(R.id.bluToothList);
-
         try {
             System.out.println("Starting.....");
             aBluetoothController.setProcessType("init");
