@@ -116,7 +116,7 @@ public class MainActivity extends ActionBarActivity{
         aBluListLayout = (LinearLayout)findViewById(R.id.bluToothList);
 
         System.out.println("testing");
-
+        System.out.println("testing");
 
         try {
             System.out.println("Starting.....");
