@@ -6,28 +6,28 @@
         jumboMode="false"
         revision="21.1.2"
         sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-c3ebe9218ca6deb232627a805e718d1d0b2fc9cd.jar" />
+        <dex dex="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-c3ebe9218ca6deb232627a805e718d1d0b2fc9cd.jar" />
     </item>
     <item
-        jar="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
+        jar="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="01ec05bfbafcc07646ba813000bf2ef11742dd03">
-        <dex dex="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-f9d1b6c103a1242fa2365811c7fac884b8c7895e.jar" />
+        <dex dex="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/internal_impl-21.0.3-55cd6b2fdd5bbfdc2dff027c8e9fd538960b8c59.jar" />
     </item>
     <item
-        jar="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
+        jar="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="81d42bf983a8741f4888a6e333e454e4a5e0eeb7">
-        <dex dex="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/classes-a0f6d4936f012d9bc97030688458af2e95a4a513.jar" />
+        <dex dex="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/classes-39da458844c77ac06a3eec5a790ca054fdd40e7f.jar" />
     </item>
     <item
-        jar="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
+        jar="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/classes.jar"
         jumboMode="false"
         revision="21.1.2"
         sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
-        <dex dex="/Users/ajithvalappil2/Documents/Android studioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/classes-40a42d511816ffcb36608c8463d574ef900e1cf6.jar" />
+        <dex dex="/Users/ajithvalappil2/AndroidStudioProjects/VoiceToText/app/build/intermediates/pre-dexed/debug/classes-647b8c61ce5192caa9bc7d54cae344dfaceda444.jar" />
     </item>
 
 </items>
